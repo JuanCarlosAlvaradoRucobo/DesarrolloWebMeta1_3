@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Procesos</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row" id="output"></div>
+    </div>
+
+    <script type="text/javascript">
+        const codigosPredefinidos = [
+            "a = 1 + 2", 
+            "console.log(1+2)",
+            "console.log(a)"
+        ];
+
+        function elegirCodigoAleatorio() {
+            const index = Math.floor(Math.random() * codigosPredefinidos.length);
+            return codigosPredefinidos[index];
+        }
+
+        function inicializarSimulacion(numProcesos) {
+            let procesos = [];
+            for (let i = 0; i < numProcesos; i++) {
+                let proceso = {
+                    numero: i + 1,
+                    codigo: []
+                };
+                
+                for (let j = 0; j < 3; j++) {
+                    proceso.codigo.push(elegirCodigoAleatorio());
+                }
+                procesos.push(proceso);
+            }
+            return procesos;
+        }
+
+        function empezarSimulacion(procesos) {
+            let turno = 0;
+            let procesoActual = 0;
+
+            while (procesos.some(p => p.codigo.length > 0)) {
+                let proceso = procesos[procesoActual];
+                if (proceso.codigo.length > 0) {
+                    let outputDiv = document.getElementById('output');
+                    outputDiv.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-header">Proceso ${proceso.numero}</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Línea ${turno + 1}</h5>
+                                    <p class="card-text">${proceso.codigo[0]}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                    proceso.codigo.shift();
+                }
+                procesoActual = (procesoActual + 1) % procesos.length;
+                turno++;
+            }
+
+            let outputDiv = document.getElementById('output');
+            outputDiv.innerHTML += `
+                <div class="col-md-12">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Simulación Completa</h5>
+                            <p class="card-text">Todos los procesos han sido ejecutados.</p>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        let numeroProcesos = prompt("Ingrese el número de procesos a simular:", "3");
+        numeroProcesos = parseInt(numeroProcesos);
+        let procesosSimulados = inicializarSimulacion(numeroProcesos);
+        empezarSimulacion(procesosSimulados);
+    </script>
+</body>
+</html>
+
